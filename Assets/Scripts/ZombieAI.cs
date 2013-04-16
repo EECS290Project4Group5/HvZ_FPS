@@ -63,8 +63,16 @@ public class ZombieAI : MonoBehaviour {
 				frameCounter--;
 				if(frameCounter == 0)
 				{
-					StartCoroutine(pathtoTarget(this.transform.localPosition, player.transform.localPosition));
-					frameCounter = framesToPath;
+					if(currentPath.Count != 0)
+					{
+						StartCoroutine(pathtoTarget(currentPath.Last.Value.pos, player.transform.localPosition));
+						frameCounter = framesToPath;
+					}
+					else
+					{
+						StartCoroutine(pathtoTarget(this.transform.localPosition, player.transform.localPosition));
+						frameCounter = framesToPath;
+					}
 				}
 				
 				//put the next path into the current one if the current one is empty
