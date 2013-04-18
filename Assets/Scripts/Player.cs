@@ -31,6 +31,8 @@ public class Player : MonoBehaviour {
 	public float regenerationFactor;
 	//Time that must elapse before reload will work again.
 	public float reloadTime;
+	//Time that must elapse before shoot will work again.
+	public float shootTime;
 	
 	public float WalkSpeed;
 	public float SprintSpeed;
@@ -41,8 +43,9 @@ public class Player : MonoBehaviour {
 	private float MoveSpeed;
 	//Time when last reload happens
 	private float time;
-	//Time between last reload and next attempted reload
-	private float elapsedTime;
+	//Time between last reload/shoot and next attempted reload/shoot
+	private float elapsedTimeR;
+	private float elapsedTimeS;
 	//Boolean for if the player is inside a building
 	private bool inBuilding;
 	
@@ -57,6 +60,7 @@ public class Player : MonoBehaviour {
 	
 	// FixedUpdate is called once per physics simulation frame
 	void FixedUpdate () {
+		
 		//If stamina is ever greater than total stamina, reset it.
 		if(stamina > maxStamina) {
 			stamina = maxStamina;
@@ -98,20 +102,23 @@ public class Player : MonoBehaviour {
 		}
 		
 		if(Input.GetKeyDown(KeyCode.Space)) {
-			Shoot ();
+			elapsedTimeS = Time.fixedTime - time;
+			if(elapsedTimeS >= shootTime) {
+				Shoot ();
+			}
 		}
 		
 		//Checks elapsedTime from last reload, if it's greater than reloadTime, reload.
 		if(Input.GetKeyDown(KeyCode.R)) {
-			elapsedTime = Time.deltaTime - time;
-			if(elapsedTime >= reloadTime) {
+			elapsedTimeR = Time.fixedTime - time;
+			if(elapsedTimeR >= reloadTime) {
 				Reload();
 			}
 		}
 		
-		print("Stamina: " + stamina);
-		print(currentClip);
-		print(currentAmmo + "|" + maxAmmo);
+		//print("Stamina: " + stamina);
+		//print(currentClip);
+		//print(currentAmmo + "|" + maxAmmo);
 		
 			
 	}
@@ -127,7 +134,9 @@ public class Player : MonoBehaviour {
 			if(currentClip < maxClipSize) {
 				currentClip++;
 				currentAmmo--;
-				time = Time.deltaTime;
+				time = Time.fixedTime;
+				print(currentClip);
+				print(currentAmmo + "|" + maxAmmo);
 			}	
 		}
 	}
@@ -148,6 +157,9 @@ public class Player : MonoBehaviour {
 	void Shoot() {
 		if(currentClip > 0) {
 			currentClip = currentClip - 1;
+			time = Time.fixedTime;
+			print(currentClip);
+			print(currentAmmo + "|" + maxAmmo);
 			//Spawn(bullet);
 		}
 		
@@ -178,4 +190,5 @@ public class Player : MonoBehaviour {
 		} else { 
 			water = water + 1; 
 		}
+	}
 }
