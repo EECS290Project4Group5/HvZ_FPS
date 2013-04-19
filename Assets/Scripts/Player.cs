@@ -49,12 +49,18 @@ public class Player : MonoBehaviour {
 	//Boolean for if the player is inside a building
 	private bool inBuilding;
 	
+	//Camera of the game
+	public GameObject camera;
+	
 	// Use this for initialization
 	void Start () {
 		MoveSpeed = WalkSpeed;
 		stamina = maxStamina;
 		inBuilding = false;
 		time = 0;
+		
+		//get camera to follow player
+		camera.transform.parent = this.transform;
 	
 	}
 	

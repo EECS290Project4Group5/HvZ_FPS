@@ -38,6 +38,9 @@ public class ZombieAI : MonoBehaviour {
 	//used to change wander if stuck trying to go through wall
 	bool wallFix = true;
 	
+	//time that zombie is frozen in seconds
+	public float freezeTime;
+	
 	// Use this for initialization
 	void Start () 
 	{
@@ -572,7 +575,20 @@ public class ZombieAI : MonoBehaviour {
 		return(new SearchObject(status, hit));
 	}
 	
+	IEnumerator freeze()
+	{
+		yield return StartCoroutine(freezeSleep(freezeTime));
+	}
 	
+	IEnumerator freeze(float timeF)
+	{
+		yield return StartCoroutine(freezeSleep(timeF));
+	}
+	
+	IEnumerator freezeSleep(float delay)
+	{
+	    yield return new WaitForSeconds(delay);
+	}
 	
 	
 	//old bad zombie movement
