@@ -40,6 +40,10 @@ public class ZombieAI : MonoBehaviour {
 	
 	//time that zombie is frozen in seconds
 	public float freezeTime;
+	//when zombie is frozen
+	private float freezeStart;
+	//if the zombie is frozen
+	private bool inFreeze;
 	
 	// Use this for initialization
 	void Start () 
@@ -51,34 +55,156 @@ public class ZombieAI : MonoBehaviour {
 	// Update is called once per frame
 	void Update () 
 	{
-	
+		//test to freeze zombie
+		/*
+		if(Input.GetKey(KeyCode.E)) 
+		{
+			print ("freeze");
+			freeze();
+		}
+		*/
 	}
 	
 	void FixedUpdate()
-	{
-		//if the zombie can see a person
-		if(seeTarget(this.transform.position, player.transform.position))
+	{		
+		//unfreezes zombie if it waited long enough
+		if(inFreeze)	
 		{
-			//if the zombie is currently tracking that person
-			if(tracking)
+			if(Time.fixedTime - freezeStart > freezeTime)
 			{
-				//decrements framcounter if it is zero, calculates a new path 
-				frameCounter--;
-				if(frameCounter == 0)
+				inFreeze = !inFreeze;	
+			}
+		}
+		
+		//for when the zombie isn't frozen
+		if(!inFreeze)
+		{
+			//if the zombie can see a person
+			if(seeTarget(this.transform.position, player.transform.position))
+			{
+				//if the zombie is currently tracking that person
+				if(tracking)
 				{
-					if(currentPath.Count != 0)
+					//decrements framcounter if it is zero, calculates a new path 
+					frameCounter--;
+					if(frameCounter == 0)
 					{
-						StartCoroutine(pathtoTarget(currentPath.Last.Value.pos, player.transform.localPosition));
-						frameCounter = framesToPath;
+						if(currentPath.Count != 0)
+						{
+							StartCoroutine(pathtoTarget(currentPath.Last.Value.pos, player.transform.localPosition));
+							frameCounter = framesToPath;
+						}
+						else
+						{
+							StartCoroutine(pathtoTarget(this.transform.localPosition, player.transform.localPosition));
+							frameCounter = framesToPath;
+						}
+					}
+					
+					//put the next path into the current one if the current one is empty
+					if(currentPath.Count == 0)
+					{
+						currentPath = new LinkedList<PathNode>(nextPath);	
+						currentTranslation = currentPath.First;
 					}
 					else
 					{
-						StartCoroutine(pathtoTarget(this.transform.localPosition, player.transform.localPosition));
+						//if the next move isn't empty, do the move and get the next move ready
+						if(currentTranslation != null)
+						{
+							gameObject.transform.position = currentTranslation.Value.pos;	
+							currentTranslation = currentTranslation.Next;
+						}
+						else
+						{
+							//put the next path into the current one
+							currentPath = new LinkedList<PathNode>(nextPath);	
+							currentTranslation = currentPath.First;
+						}
+					}
+				}
+				else
+				{
+					//make sure to make a new path to the human
+					tracking = true;
+					frameCounter = 0;
+					if(frameCounter == 0)
+					{
+						StartCoroutine(pathtoTarget(this.transform.position, player.transform.localPosition));
+						frameCounter = framesToPath;
+					}
+					
+					//clears out these values so it doesn't move until it has a path
+					nextPath = new LinkedList<PathNode>();
+					currentPath = new LinkedList<PathNode>();
+					currentTranslation = null;
+					
+					/*
+					if(currentPath.Count == 0)
+					{
+						currentPath = new LinkedList<PathNode>(nextPath);	
+						currentTranslation = currentPath.First;
+					}
+					else
+					{
+						tracking = true;
+						if(currentTranslation != null)
+						{
+							gameObject.transform.position = currentTranslation.Value.pos;	
+							currentTranslation = currentTranslation.Next;
+						}
+						else
+						{
+							currentPath = new LinkedList<PathNode>(nextPath);	
+							currentTranslation = currentPath.First;
+						}
+					}
+					*/
+				}
+			}
+			//if the zombie doesn't see anyone
+			else
+			{	
+				//if the wanderTarget is empty, set it
+				//I realize this doesn't allow the spot(0,0,0), that should be ok, it can get infinetly close to it
+				if(wanderTarget == Vector3.zero)
+				{
+					changeWanderTarget();
+				}
+				
+				//if the zombie is within a movement of the wanderTarget, it find a new target
+				if(getDistance(wanderTarget, this.transform.position) < Time.fixedDeltaTime*maxSpeed*2)
+				{
+					changeWanderTarget();
+				}
+				
+				//switches tracking to false, because it can't track if it can't see
+				if(tracking)
+				{
+					//frameCounter = 1;
+					tracking = false;
+				}
+				
+				//decrement frameCounter
+				frameCounter--;
+				if(frameCounter == 0)
+				{
+					//get a new path from the end of the current one
+					if(currentTranslation != null)
+					{
+						print ("new Path");
+						StartCoroutine(pathtoTarget(currentPath.Last.Value.pos, wanderTarget));
+						frameCounter = framesToPath;
+					}
+					//get a path from the current position if it has not current movement
+					else
+					{
+						StartCoroutine(pathtoTarget(this.transform.position, wanderTarget));
 						frameCounter = framesToPath;
 					}
 				}
 				
-				//put the next path into the current one if the current one is empty
+				//if the current path is empty, put the next path into it
 				if(currentPath.Count == 0)
 				{
 					currentPath = new LinkedList<PathNode>(nextPath);	
@@ -93,142 +219,40 @@ public class ZombieAI : MonoBehaviour {
 						currentTranslation = currentTranslation.Next;
 					}
 					else
-					{
+					{	
+						//used if the zombie gets stuck on a wall
+						//changes where he is going
+						if(getDistance(currentPath.First.Value.pos, currentPath.Last.Value.pos) < Time.fixedDeltaTime*maxSpeed*10 && wallFix)
+						{
+							changeWanderTarget();	
+							wallFix = false;
+						}
 						//put the next path into the current one
-						currentPath = new LinkedList<PathNode>(nextPath);	
-						currentTranslation = currentPath.First;
+						else
+						{
+							print ("switch");
+							currentPath = new LinkedList<PathNode>(nextPath);	
+							currentTranslation = currentPath.First;
+							wallFix = true;
+						}
 					}
 				}
 			}
-			else
+			
+			/*
+			 * old really basic way of
+			float dist = checkDistance();
+			if(dist < viewDistance)
 			{
-				//make sure to make a new path to the human
 				tracking = true;
-				frameCounter = 0;
-				if(frameCounter == 0)
-				{
-					StartCoroutine(pathtoTarget(this.transform.position, player.transform.localPosition));
-					frameCounter = framesToPath;
-				}
-				
-				//clears out these values so it doesn't move until it has a path
-				nextPath = new LinkedList<PathNode>();
-				currentPath = new LinkedList<PathNode>();
-				currentTranslation = null;
-				
-				/*
-				if(currentPath.Count == 0)
-				{
-					currentPath = new LinkedList<PathNode>(nextPath);	
-					currentTranslation = currentPath.First;
-				}
-				else
-				{
-					tracking = true;
-					if(currentTranslation != null)
-					{
-						gameObject.transform.position = currentTranslation.Value.pos;	
-						currentTranslation = currentTranslation.Next;
-					}
-					else
-					{
-						currentPath = new LinkedList<PathNode>(nextPath);	
-						currentTranslation = currentPath.First;
-					}
-				}
-				*/
-			}
-		}
-		//if the zombie doesn't see anyone
-		else
-		{	
-			//if the wanderTarget is empty, set it
-			//I realize this doesn't allow the spot(0,0,0), that should be ok, it can get infinetly close to it
-			if(wanderTarget == Vector3.zero)
-			{
-				changeWanderTarget();
-			}
-			
-			//if the zombie is within a movement of the wanderTarget, it find a new target
-			if(getDistance(wanderTarget, this.transform.position) < Time.fixedDeltaTime*maxSpeed*2)
-			{
-				changeWanderTarget();
-			}
-			
-			//switches tracking to false, because it can't track if it can't see
-			if(tracking)
-			{
-				//frameCounter = 1;
-				tracking = false;
-			}
-			
-			//decrement frameCounter
-			frameCounter--;
-			if(frameCounter == 0)
-			{
-				//get a new path from the end of the current one
-				if(currentTranslation != null)
-				{
-					print ("new Path");
-					StartCoroutine(pathtoTarget(currentPath.Last.Value.pos, wanderTarget));
-					frameCounter = framesToPath;
-				}
-				//get a path from the current position if it has not current movement
-				else
-				{
-					StartCoroutine(pathtoTarget(this.transform.position, wanderTarget));
-					frameCounter = framesToPath;
-				}
-			}
-			
-			//if the current path is empty, put the next path into it
-			if(currentPath.Count == 0)
-			{
-				currentPath = new LinkedList<PathNode>(nextPath);	
-				currentTranslation = currentPath.First;
+				chaseHuman(player);
 			}
 			else
 			{
-				//if the next move isn't empty, do the move and get the next move ready
-				if(currentTranslation != null)
-				{
-					gameObject.transform.position = currentTranslation.Value.pos;	
-					currentTranslation = currentTranslation.Next;
-				}
-				else
-				{	
-					//used if the zombie gets stuck on a wall
-					//changes where he is going
-					if(getDistance(currentPath.First.Value.pos, currentPath.Last.Value.pos) < Time.fixedDeltaTime*maxSpeed*10 && wallFix)
-					{
-						changeWanderTarget();	
-						wallFix = false;
-					}
-					//put the next path into the current one
-					else
-					{
-						print ("switch");
-						currentPath = new LinkedList<PathNode>(nextPath);	
-						currentTranslation = currentPath.First;
-						wallFix = true;
-					}
-				}
+				tracking = false;	
 			}
+			*/
 		}
-		
-		/*
-		 * old really basic way of
-		float dist = checkDistance();
-		if(dist < viewDistance)
-		{
-			tracking = true;
-			chaseHuman(player);
-		}
-		else
-		{
-			tracking = false;	
-		}
-		*/
 	}
 	
 	//function to change where the zombie is wondering to
@@ -575,21 +599,18 @@ public class ZombieAI : MonoBehaviour {
 		return(new SearchObject(status, hit));
 	}
 	
-	IEnumerator freeze()
+	//function to freeze a zombie
+	void freeze()
 	{
-		yield return StartCoroutine(freezeSleep(freezeTime));
+		//zombie can't get refrozen while frozen
+		if(!inFreeze)
+		{
+			//makes the zombie frozen and records the time
+			inFreeze = true;
+			freezeStart = Time.fixedTime;
+		}
 	}
-	
-	IEnumerator freeze(float timeF)
-	{
-		yield return StartCoroutine(freezeSleep(timeF));
-	}
-	
-	IEnumerator freezeSleep(float delay)
-	{
-	    yield return new WaitForSeconds(delay);
-	}
-	
+		
 	
 	//old bad zombie movement
 	/*
