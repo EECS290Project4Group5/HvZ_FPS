@@ -610,8 +610,57 @@ public class ZombieAI : MonoBehaviour {
 			freezeStart = Time.fixedTime;
 		}
 	}
-		
 	
+	
+	//checks if a zombie can see a human given the zombie's position and the human's position
+	//returns true only if it hits the human
+	bool seeTarget(Vector3 startPos, Vector3 targetPos)
+	{
+		RaycastHit hit;
+		if(Physics.Raycast(startPos, (targetPos - startPos).normalized, out hit, viewDistance))
+		{
+			if(hit.collider.gameObject.tag == "Human")
+			{
+				return true;	
+			}	
+		}
+		return false;
+	}
+	
+	//gets distance between two positions using 1-norm in x and z
+	//(absolute difference in x and z coordiantes)
+	float getDistance(Vector3 start, Vector3 end)
+	{
+		float norm;		
+		norm = Mathf.Abs(start.x - end.x);
+		norm += Mathf.Abs(start.z - end.z);
+		return norm;
+	}
+	
+	//gets checks if the human is within the zombies range of vision
+	float checkDistance()
+	{
+		float dist;
+		dist = Mathf.Abs(this.transform.localPosition.x - player.transform.localPosition.x);
+		//dist += Math.Abs(this.transform.localPosition.y - player.transform.localPosition.y);
+		dist += Mathf.Abs(this.transform.localPosition.z - player.transform.localPosition.z);
+		return dist;
+	}
+	
+	//method for zombie to freeze on collision with certain objects
+	void OnCollisionEnter(Collision collision)
+	{
+		/*
+		if(collision.gameObject.tag == "nerf")
+		{
+			freeze ();
+		}
+		*/
+	}
+}
+
+
+
 	//old bad zombie movement
 	/*
 	void chaseHuman(GameObject target)
@@ -719,39 +768,3 @@ public class ZombieAI : MonoBehaviour {
 		
 	}
 	*/
-	
-	//checks if a zombie can see a human given the zombie's position and the human's position
-	//returns true only if it hits the human
-	bool seeTarget(Vector3 startPos, Vector3 targetPos)
-	{
-		RaycastHit hit;
-		if(Physics.Raycast(startPos, (targetPos - startPos).normalized, out hit, viewDistance))
-		{
-			if(hit.collider.gameObject.tag == "Human")
-			{
-				return true;	
-			}	
-		}
-		return false;
-	}
-	
-	//gets distance between two positions using 1-norm in x and z
-	//(absolute difference in x and z coordiantes)
-	float getDistance(Vector3 start, Vector3 end)
-	{
-		float norm;		
-		norm = Mathf.Abs(start.x - end.x);
-		norm += Mathf.Abs(start.z - end.z);
-		return norm;
-	}
-	
-	//gets checks if the human is within the zombies range of vision
-	float checkDistance()
-	{
-		float dist;
-		dist = Mathf.Abs(this.transform.localPosition.x - player.transform.localPosition.x);
-		//dist += Math.Abs(this.transform.localPosition.y - player.transform.localPosition.y);
-		dist += Mathf.Abs(this.transform.localPosition.z - player.transform.localPosition.z);
-		return dist;
-	}
-}
