@@ -60,6 +60,7 @@ public class Player : MonoBehaviour {
 		time = 0;
 		
 		//get camera to follow player
+		camera.transform.position = this.transform.position + new Vector3 (0, 100, 0);
 		camera.transform.parent = this.transform;
 	
 	}
