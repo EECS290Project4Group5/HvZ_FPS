@@ -37,7 +37,7 @@ public class Player : MonoBehaviour {
 	public float WalkSpeed;
 	public float SprintSpeed;
 	
-	
+	public GameObject master;
 	
 	//Move speed, set either to walk speed or sprint speed, depending on state.
 	private float MoveSpeed;
@@ -138,6 +138,7 @@ public class Player : MonoBehaviour {
 	void Reload() {
 		if(currentAmmo > 0) {
 			if(currentClip < maxClipSize) {
+				master.SendMessage ("reload");
 				currentClip++;
 				currentAmmo--;
 				time = Time.fixedTime;
