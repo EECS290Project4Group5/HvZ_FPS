@@ -112,6 +112,7 @@ public class ZombieAI : MonoBehaviour {
 						//if the next move isn't empty, do the move and get the next move ready
 						if(currentTranslation != null)
 						{
+							changeDirection();
 							gameObject.transform.position = currentTranslation.Value.pos;	
 							currentTranslation = currentTranslation.Next;
 						}
@@ -215,6 +216,7 @@ public class ZombieAI : MonoBehaviour {
 					//if the next move isn't empty, do the move and get the next move ready
 					if(currentTranslation != null)
 					{
+						changeDirection();
 						gameObject.transform.position = currentTranslation.Value.pos;	
 						currentTranslation = currentTranslation.Next;
 					}
@@ -645,6 +647,27 @@ public class ZombieAI : MonoBehaviour {
 		//dist += Math.Abs(this.transform.localPosition.y - player.transform.localPosition.y);
 		dist += Mathf.Abs(this.transform.localPosition.z - player.transform.localPosition.z);
 		return dist;
+	}
+	
+	void changeDirection()
+	{
+		Vector3 dir = (currentTranslation.Value.pos - gameObject.transform.position).normalized;
+		if(dir == Vector3.left)
+		{
+			transform.rotation = Quaternion.Euler(0,-90,0);	
+		}
+		if(dir == Vector3.right)
+		{
+			transform.rotation = Quaternion.Euler(0,90,0);	
+		}
+		if(dir == Vector3.forward)
+		{
+			transform.rotation = Quaternion.Euler(0,0,0);	
+		}
+		if(dir == Vector3.back)
+		{
+			transform.rotation = Quaternion.Euler(0,180,0);	
+		}
 	}
 	
 	//method for zombie to freeze on collision with certain objects
