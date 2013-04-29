@@ -1,6 +1,8 @@
 using UnityEngine;
 using System.Collections;
 
+//Author: Daniel Pfeffer dnp19
+//Object used for zombie pathfinding
 public class PathNode{
 	
 	public PathNode prev;

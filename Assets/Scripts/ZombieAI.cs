@@ -2,6 +2,8 @@ using UnityEngine;
 using System.Collections;
 using System.Collections.Generic;
 
+//Author: Daniel Pfeffer dnp19
+//zombie ai
 public class ZombieAI : MonoBehaviour {
 	
 	//player to look for
@@ -649,9 +651,12 @@ public class ZombieAI : MonoBehaviour {
 		return dist;
 	}
 	
+	//Function to change the direction the zombie is looking at
 	void changeDirection()
 	{
+		//gets direction zombie is moving
 		Vector3 dir = (currentTranslation.Value.pos - gameObject.transform.position).normalized;
+		//changes rotation of zombie
 		if(dir == Vector3.left)
 		{
 			transform.rotation = Quaternion.Euler(0,-90,0);	
@@ -681,113 +686,3 @@ public class ZombieAI : MonoBehaviour {
 		*/
 	}
 }
-
-
-
-	//old bad zombie movement
-	/*
-	void chaseHuman(GameObject target)
-	{
-		RaycastHit hit;
-		float xDist = player.transform.localPosition.x - this.transform.localPosition.x;
-		float zDist = player.transform.localPosition.z - this.transform.localPosition.z;
-		
-		Vector3 p1 = transform.position;
-		Vector3 p2 = transform.position;
-		Vector3 directionToMove = Vector3.zero;
-		float moveDist = 0;
-		float moveDist1 = maxSpeed * Time.fixedDeltaTime * Mathf.Sign(xDist);
-		float moveDist2 = maxSpeed * Time.fixedDeltaTime * Mathf.Sign(zDist);
-		
-		//choose which direction to move
-		if(Mathf.Abs(xDist) < Mathf.Abs(zDist))
-		{
-			p2 = p1 + Vector3.right * moveDist1;
-			
-			if(xDist > moveDist1)
-			{
-				//print ("Right: 1");
-				directionToMove = Vector3.right;
-				moveDist = moveDist1;
-			}
-			else if(xDist <= moveDist1 && xDist > .001)
-			{
-				print ("Right: 2");
-				moveDist = xDist;
-				directionToMove = Vector3.right;
-			}
-			else
-			{
-				p2 = p1 + Vector3.up * moveDist2;
-				if(zDist > moveDist2)
-				{
-					//print (zDist);
-					//print ("Up: 1.2");
-					directionToMove = new Vector3(0,0,1);
-					moveDist = moveDist2;
-				}
-				else if(zDist <= moveDist2 && zDist > .001)
-				{
-					print ("Up: 2.2");
-					directionToMove = new Vector3(0,0,1);
-					moveDist = zDist;
-				}
-				else
-				{
-					print ("Staying Still");	
-				}
-			}
-		}
-		else if(Mathf.Abs(xDist) > Mathf.Abs(zDist))
-		{
-			p2 = p1 + Vector3.up * moveDist2;
-			if(zDist > moveDist2)
-			{
-				print ("Up: 1");
-				directionToMove = new Vector3(0,0,1);
-				moveDist = moveDist2;
-			}
-			else if(zDist <= moveDist2 && zDist > .001)
-			{
-				print ("Up: 2");
-				directionToMove = new Vector3(0,0,1);
-				moveDist = zDist - .001f;
-			}
-			else
-			{
-				p2 = p1 + Vector3.right * moveDist1;
-				if(xDist > moveDist1)
-				{
-					print ("Right: 1.2");
-					directionToMove = Vector3.right;
-					moveDist = moveDist1;
-				}
-				else if(xDist <= moveDist1 && xDist > .001)
-				{
-					print ("Right: 2.2");
-					moveDist = xDist;
-					directionToMove = Vector3.right;
-				}
-				else
-				{
-					print ("Staying Still");	
-				}
-			}
-			
-		}
-		else
-		{
-			print ("Staying Still");	
-		}
-		
-		this.transform.Translate(directionToMove * moveDist);
-		
-
-//		if(!Physics.CapsuleCast(p1, p2, this.transform.localScale.x, transform.forward, out hit, moveDist))
-//		{
-//			this.transform.Translate(directionToMove * moveDist);	
-//		}
-
-		
-	}
-	*/
