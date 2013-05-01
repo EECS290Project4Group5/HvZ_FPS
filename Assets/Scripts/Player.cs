@@ -186,10 +186,10 @@ public class Player : MonoBehaviour {
 			} else if(lastDirection == Vector3.back) {
 				direction = 180;
 			} else if(lastDirection == Vector3.left) {
-				direction = 280;
-			}
-			
+				direction = 270;
+			}			
 			clone.transform.eulerAngles = new Vector3(90,direction,0);
+			clone.transform.Translate(Vector3.up*25);
 		}
 	}
 	
