@@ -20,4 +20,12 @@ public class Dart : MonoBehaviour {
 	void OnBecameInvisible() {
 		this.Destroy(gameObject);
 	}
+	
+	void OnCollisionEnter(Collision collision)
+	{
+		if(collision.gameObject.tag != "Human")
+		{
+			this.Destroy(gameObject);
+		}
+	}
 }

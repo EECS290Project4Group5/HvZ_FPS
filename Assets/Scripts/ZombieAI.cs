@@ -46,6 +46,7 @@ public class ZombieAI : MonoBehaviour {
 	private float freezeStart;
 	//if the zombie is frozen
 	private bool inFreeze;
+	private Vector3 freezePosition;
 	
 	// Use this for initialization
 	void Start () 
@@ -74,6 +75,7 @@ public class ZombieAI : MonoBehaviour {
 		{
 			if(Time.fixedTime - freezeStart > freezeTime)
 			{
+				transform.position = freezePosition;
 				inFreeze = !inFreeze;	
 			}
 		}
@@ -606,6 +608,7 @@ public class ZombieAI : MonoBehaviour {
 	//function to freeze a zombie
 	void freeze()
 	{
+		freezePosition = transform.position;
 		//zombie can't get refrozen while frozen
 		if(!inFreeze)
 		{
@@ -678,11 +681,9 @@ public class ZombieAI : MonoBehaviour {
 	//method for zombie to freeze on collision with certain objects
 	void OnCollisionEnter(Collision collision)
 	{
-		/*
-		if(collision.gameObject.tag == "nerf")
+		if(collision.gameObject.tag == "Nerf")
 		{
-			freeze ();
+			freeze();
 		}
-		*/
 	}
 }
