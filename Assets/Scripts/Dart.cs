@@ -4,7 +4,7 @@ using System.Collections;
 public class Dart : MonoBehaviour {
 	
 	//Dart speed
-	public float constantVelocity = 100;
+	public float constantVelocity = 200;
 	
 	// Use this for initialization
 	void Start () {
@@ -15,5 +15,9 @@ public class Dart : MonoBehaviour {
 	void FixedUpdate () {
 		//Move dart at constant speed in direction it's facing
 		rigidbody.velocity = transform.up * constantVelocity;
+	}
+	
+	void OnBecameInvisible() {
+		this.Destroy(gameObject);
 	}
 }
