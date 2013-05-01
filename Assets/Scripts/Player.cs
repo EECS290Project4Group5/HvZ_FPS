@@ -52,6 +52,9 @@ public class Player : MonoBehaviour {
 	//Camera of the game
 	public GameObject camera;
 	
+	//The last direction of travel by the player
+	Vector3 lastDirection = Vector3.forward;
+	
 	// Use this for initialization
 	void Start () {
 		MoveSpeed = WalkSpeed;
@@ -132,6 +135,7 @@ public class Player : MonoBehaviour {
 	
 	void move(Vector3 direction) {
 		this.transform.Translate(direction * MoveSpeed * Time.fixedDeltaTime);
+		lastDirection = direction;
 	}
 	
 	//Checks if you have ammo to reload with. If so, checks to see if clip is full. 
@@ -161,6 +165,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
+	public Rigidbody dart;
 	//Checks to see if bullet is available, if so, remove one from clip and spawn a bullet.
 	void Shoot() {
 		if(currentClip > 0) {
@@ -168,9 +173,24 @@ public class Player : MonoBehaviour {
 			time = Time.fixedTime;
 			print(currentClip);
 			print(currentAmmo + "|" + maxAmmo);
-			//Spawn(bullet);
+			//Spawn/shoot a dart
+			
+			//Rigidbody clone = Instantiate(dart, transform.position, lastDirection) as Rigidbody;
+			Rigidbody clone = Instantiate(dart) as Rigidbody;
+			clone.transform.position = this.transform.position;
+			float direction = 0;
+			if(lastDirection == Vector3.forward) {
+				direction = 0;
+			} else if(lastDirection == Vector3.right) {
+				direction = 90;
+			} else if(lastDirection == Vector3.back) {
+				direction = 180;
+			} else if(lastDirection == Vector3.left) {
+				direction = 280;
+			}
+			
+			clone.transform.eulerAngles = new Vector3(90,direction,0);
 		}
-		
 	}
 	
 	void ThrowSock() {
