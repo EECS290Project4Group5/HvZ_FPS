@@ -12,7 +12,7 @@ public class DroppedObject : MonoBehaviour {
 	void Update () {
 		GameObject human = GameObject.FindGameObjectWithTag("Human");
 		Player p = (Player)human.GetComponent(typeof(Player));
-		if(Vector3.Distance(this.transform.position, human.transform.position) < 25)
+		if(Vector3.Distance(this.transform.position, human.transform.position) < 50)
 		{
 			this.Destroy(gameObject);
 			p.PickUpAmmo();
