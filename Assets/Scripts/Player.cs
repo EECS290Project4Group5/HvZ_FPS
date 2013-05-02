@@ -175,7 +175,6 @@ public class Player : MonoBehaviour {
 			print(currentAmmo + "|" + maxAmmo);
 			//Spawn/shoot a dart
 			
-			//Rigidbody clone = Instantiate(dart, transform.position, lastDirection) as Rigidbody;
 			Rigidbody clone = Instantiate(dart) as Rigidbody;
 			clone.transform.position = this.transform.position;
 			float direction = 0;

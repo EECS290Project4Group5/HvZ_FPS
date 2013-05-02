@@ -6,6 +6,8 @@ public class Dart : MonoBehaviour {
 	//Dart speed
 	public float constantVelocity = 200;
 	
+	public GameObject dropAmmo;
+	
 	// Use this for initialization
 	void Start () {
 		
@@ -26,6 +28,8 @@ public class Dart : MonoBehaviour {
 		if(collision.gameObject.tag != "Human")
 		{
 			this.Destroy(gameObject);
+			GameObject clone = Instantiate(dropAmmo) as GameObject;
+			clone.transform.position = collision.contacts[0].point;
 		}
 	}
 }
