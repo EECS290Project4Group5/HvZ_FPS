@@ -85,6 +85,8 @@ public class Player : MonoBehaviour {
 			move(Vector3.back);
 		} else if (Input.GetKey(KeyCode.D)) {
 			move(Vector3.right);
+		} else {
+			this.transform.Translate(0,0,0);
 		}
 		
 		//While the left shift key is pressed, sprint is called.
@@ -205,7 +207,7 @@ public class Player : MonoBehaviour {
 		}
 	}
 	
-	void PickUpAmmo() {
+	public void PickUpAmmo() {
 		if(currentAmmo == maxAmmo) {
 		} else {
 			currentAmmo = currentAmmo + 1;

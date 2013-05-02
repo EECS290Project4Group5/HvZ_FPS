@@ -105,7 +105,7 @@ public class MasterGUI : MonoBehaviour {
 				GUI.Label (new Rect(0, 0, ammoFull.width, ammoFull.height), ammoFull);
 			GUI.EndGroup ();
 			GUI.Label (new Rect(ammoNumLoc.x * gunSize.x * Screen.width, ammoNumLoc.y * gunSize.y * Screen.height, gunSize.x * Screen.width, gunSize.y * Screen.height),
-						playerScript.currentClip + " / " + playerScript.maxAmmo, ammoStyle);
+						playerScript.currentClip + " / " + playerScript.currentAmmo, ammoStyle);
 		GUI.EndGroup ();
 	}
 	
