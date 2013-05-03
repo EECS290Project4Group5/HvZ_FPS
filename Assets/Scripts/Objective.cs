@@ -17,6 +17,8 @@ public class Objective : MonoBehaviour {
 	
 	}
 	
+	//if player enters objective space, tell master to
+	//check if all other conditions are met
 	void OnTriggerEnter(Collider obj){
 		if (obj.CompareTag("Human"))
 			gm.atObjective();

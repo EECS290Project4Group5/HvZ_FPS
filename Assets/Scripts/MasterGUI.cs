@@ -60,35 +60,47 @@ public class MasterGUI : MonoBehaviour {
 	}
 	
 	void OnGUI(){
+		//display the timer
 		timerDisplay ();
 		
+		//display the stamina bar
 		staminaBar ();
 		
+		//display current ammo
 		gunDisplay ();
 		
+		//display the reloading meter if currently reloading
 		if (reloading){
+			//place reload meter above player
 			reloadMeterLoc = Camera.main.WorldToScreenPoint (player.transform.position);
 			reloadMeterLoc.x -= (reloadMeterSize.x / 2) + reloadMeterOffset.x;
 			reloadMeterLoc.y = (Screen.height - reloadMeterLoc.y) - reloadMeterSize.y / 2 + reloadMeterOffset.y;
+			//decrement the reloading timer
 			reloadElapsed -= Time.deltaTime;
 			reloadMeter ();
 			if (reloadElapsed <= 0)
+				//if finished reloading, take meter off screen
 				reloading = false;
 		}
 		
+		//display pause menu if paused
 		if (masterScript.isPaused){
 			if (mainMenu){
 				pauseMenu ();
 			}
+			//if resume game is clicked, resume game
 			if (menuBools[0])
 				resume ();
+			//show options if options is clicked
 			if (menuBools[1]){
 				showOptions ();
 				mainMenu = true;
 			}
+			//restart level
 			if (menuBools[2]){
 				restart ();
 			}
+			//quit to main menu
 			if (menuBools[3])
 				quit ();
 		}
@@ -120,6 +132,7 @@ public class MasterGUI : MonoBehaviour {
 	void staminaBar (){
 		GUI.BeginGroup (new Rect(staminaLoc.x * Screen.width, staminaLoc.y * Screen.height, staminaSize.x * Screen.width, staminaSize.y * Screen.height));
 			GUI.Label (new Rect(0, 0, staminaEmpty.width, staminaEmpty.height), staminaEmpty);
+			// adjust the amount of meter shown based on amount of stamina left
 			GUI.BeginGroup (new Rect(0, 0, (playerScript.stamina / playerScript.maxStamina) * staminaSize.x * Screen.width, staminaSize.y * Screen.height));
 				GUI.Label (new Rect(0, 0, staminaFull.width, staminaFull.height), staminaFull);
 			GUI.EndGroup();
@@ -130,9 +143,11 @@ public class MasterGUI : MonoBehaviour {
 	void gunDisplay (){
 		GUI.BeginGroup (new Rect(gunLoc.x * Screen.width, gunLoc.y * Screen.height, gunSize.x * Screen.width, gunSize.y * Screen.height));
 			GUI.Label (new Rect(0, 0, ammoEmpty.width, ammoEmpty.height), staminaEmpty);
+			//adjust the amount of meter shown based on amount of ammo in clip
 			GUI.BeginGroup (new Rect(0, 0, ((float)playerScript.currentClip / (float)playerScript.maxClipSize) * gunSize.x * Screen.width, gunSize.y * Screen.height));
 				GUI.Label (new Rect(0, 0, ammoFull.width, ammoFull.height), ammoFull);
 			GUI.EndGroup ();
+			//display the ammo in clip and total ammo
 			GUI.Label (new Rect(ammoNumLoc.x * gunSize.x * Screen.width, ammoNumLoc.y * gunSize.y * Screen.height, gunSize.x * Screen.width, gunSize.y * Screen.height),
 						playerScript.currentClip + " / " + playerScript.maxAmmo, ammoStyle);
 		GUI.EndGroup ();
@@ -143,6 +158,7 @@ public class MasterGUI : MonoBehaviour {
 		GUI.Label (new Rect(reloadMeterLoc.x + reloadLabelLoc.x, reloadMeterLoc.y + reloadLabelLoc.y, reloadLabelSize.x, reloadLabelSize.y), "Reloading!", reloadStyle);
 		GUI.BeginGroup (new Rect(reloadMeterLoc.x, reloadMeterLoc.y, reloadMeterSize.x, reloadMeterSize.y));
 			GUI.Label (new Rect(0, 0, reloadEmpty.width, reloadEmpty.height), reloadEmpty);
+			// adjust the amount of meter shown based on amount of time left
 			GUI.BeginGroup (new Rect(0, 0, (reloadElapsed / playerScript.reloadTime) * reloadMeterSize.x, reloadMeterSize.y));
 				GUI.Label (new Rect(0, 0, reloadFull.width, reloadFull.height), reloadFull);
 			GUI.EndGroup ();
@@ -154,6 +170,7 @@ public class MasterGUI : MonoBehaviour {
 		reloading = true;
 	}
 	
+	// display the pause menu
 	void pauseMenu (){
 		GUI.BeginGroup (new Rect(pauseMenuLoc.x * Screen.width, pauseMenuLoc.y * Screen.height, pauseMenuSize.x * Screen.width, pauseMenuSize.y * Screen.height));
 			float itemSize = (pauseMenuSize.y * Screen.height) / pauseMenuItems.Length;
@@ -164,20 +181,24 @@ public class MasterGUI : MonoBehaviour {
 		GUI.EndGroup ();
 	}
 	
+	//unpause the game
 	void resume (){
 		masterScript.pause ();
 	}
 	
+	// shows an options screen (not implemented yet
 	void showOptions (){
 		mainMenu = false;
 		
 	}
 	
+	//restarts level (not implemented)
 	void restart (){
 		mainMenu = false;
 		//masterScript.restartLevel ();
 	}
 	
+	//quits to start screen (not implemented)
 	void quit (){
 		mainMenu = false;
 		//masterScript.quitGame ();

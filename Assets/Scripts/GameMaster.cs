@@ -5,7 +5,6 @@ public class GameMaster : MonoBehaviour {
 	
 	public bool isPaused = true;
 	public string pauseKey = "escape";
-	public float startTime;
 	public float currentTime;
 	public GameObject objective;
 	public GameObject player;
@@ -15,13 +14,15 @@ public class GameMaster : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
-		if (GameState.currLevel == 1)
+		// get the victory and start location, and time limit based on current level
+		if (GameState.currLevel == 1){
 			victLoc = GameState.victLvl1;
-		if (GameState.currLevel == 1)
 			startLoc = GameState.startLvl1;
-		currentTime = startTime;
+			currentTime = GameState.timeLvl1;
+		}
 		if (isPaused)
 			Time.timeScale = 0;
+		//set up objective marker and place player in the proper location
 		Instantiate (objective, victLoc, Quaternion.identity);
 		player.transform.position = startLoc;
 	}
@@ -39,19 +40,26 @@ public class GameMaster : MonoBehaviour {
 	}
 	
 	public void pause(){
+		// if not paused, pause
 		if(!isPaused)
 			Time.timeScale = 0;
 		else
+		// otheriwse unpause
 			Time.timeScale = 1;
 		isPaused = !isPaused;
 	}
 	
+	/* We can use this method to check for other conditions based on level.
+	 * Currently, only the location ofthe player is checked, so it is an immediate victory if
+	 * player reaches the objective marker */
 	public void atObjective(){
 		GameState.victory = true;
 		Debug.Log ("victory");
 		//Application.LoadLevel("PostLevelScreen");
 	}
 	
+	/* Post level screen will display information based on victory or defeat. There
+	 * will be a different scene for "death" */
 	void lost(){
 		GameState.victory = false;
 		Debug.Log ("Lost");
