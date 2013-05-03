@@ -1,3 +1,6 @@
+// Tim Rogers
+// This class creates the GUI for the game.
+
 using UnityEngine;
 using System.Collections;
 
@@ -149,7 +152,7 @@ public class MasterGUI : MonoBehaviour {
 			GUI.EndGroup ();
 			//display the ammo in clip and total ammo
 			GUI.Label (new Rect(ammoNumLoc.x * gunSize.x * Screen.width, ammoNumLoc.y * gunSize.y * Screen.height, gunSize.x * Screen.width, gunSize.y * Screen.height),
-						playerScript.currentClip + " / " + playerScript.maxAmmo, ammoStyle);
+						playerScript.currentClip + " / " + playerScript.currentAmmo, ammoStyle);
 		GUI.EndGroup ();
 	}
 	

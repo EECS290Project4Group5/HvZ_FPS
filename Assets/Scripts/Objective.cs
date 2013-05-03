@@ -1,3 +1,6 @@
+//Tim Rogers
+// This script lets the master know that the player has reached the objective
+
 using UnityEngine;
 using System.Collections;
 

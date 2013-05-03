@@ -1,3 +1,7 @@
+// Tim Rogers
+// This script has functions to do things that affect the level, such as
+// pause, victory, and defeat condition checks.
+
 using UnityEngine;
 using System.Collections;
 
