@@ -77,8 +77,10 @@ public class MasterGUI : MonoBehaviour {
 		}
 		
 		if (masterScript.isPaused){
-			if (mainMenu)
+			if (mainMenu){
 				pauseMenu ();
+				Debug.Log ("pause menu is supposed to be displayed");
+			}
 			if (menuBools[0])
 				resume ();
 			if (menuBools[1]){

@@ -8,7 +8,7 @@ public class Objective : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		master = GameObject.FindWithTag("GM");
+		master = GameObject.FindGameObjectWithTag("GM");
 		gm = (GameMaster)master.GetComponent ("GameMaster");
 	}
 	
