@@ -15,6 +15,8 @@ public class MasterGUI : MonoBehaviour {
 	public Vector2 reloadLabelSize;
 	public Vector2 reloadMeterOffset;
 	public Vector2 reloadMeterSize;
+	public Vector2 pauseMenuLoc;
+	public Vector2 pauseMenuSize;
 	
 	public Texture2D staminaEmpty;
 	public Texture2D staminaFull;
@@ -26,13 +28,20 @@ public class MasterGUI : MonoBehaviour {
 	public GUIStyle ammoStyle;
 	public GUIStyle timerStyle;
 	public GUIStyle reloadStyle;
+	//public GUIStyle pauseMenuStyle;
+	
+	public string[] pauseMenuItems;
 	
 	public GameObject player;
 	
 	//private variables
 	private Vector3 reloadMeterLoc;
 	private float reloadElapsed;
+	
 	private bool reloading = false;
+	private bool mainMenu = true;
+	private bool[] menuBools;
+	
 	private Player playerScript;
 	private GameMaster masterScript;
 
@@ -40,6 +49,9 @@ public class MasterGUI : MonoBehaviour {
 	void Start () {
 		playerScript = (Player) player.GetComponent ("Player");
 		masterScript = (GameMaster) GetComponent ("GameMaster");
+		menuBools = new bool[pauseMenuItems.Length];
+		for (int i = 0; i < menuBools.Length; i++)
+			menuBools[i] = false;
 	}
 	
 	// Update is called once per frame
@@ -63,10 +75,26 @@ public class MasterGUI : MonoBehaviour {
 			if (reloadElapsed <= 0)
 				reloading = false;
 		}
+		
+		if (masterScript.isPaused){
+			if (mainMenu)
+				pauseMenu ();
+			if (menuBools[0])
+				resume ();
+			if (menuBools[1]){
+				showOptions ();
+				mainMenu = true;
+			}
+			if (menuBools[2]){
+				restart ();
+			}
+			if (menuBools[3])
+				quit ();
+		}
 	}
 	
 	// Displays time remaining
-	void timerDisplay(){
+	void timerDisplay (){
 		//floor function to convert to int
 		int timeToDisplay = Mathf.FloorToInt(masterScript.currentTime);
 		
@@ -88,7 +116,7 @@ public class MasterGUI : MonoBehaviour {
 	}
 	
 	// Displays stamina meter
-	void staminaBar(){
+	void staminaBar (){
 		GUI.BeginGroup (new Rect(staminaLoc.x * Screen.width, staminaLoc.y * Screen.height, staminaSize.x * Screen.width, staminaSize.y * Screen.height));
 			GUI.Label (new Rect(0, 0, staminaEmpty.width, staminaEmpty.height), staminaEmpty);
 			GUI.BeginGroup (new Rect(0, 0, (playerScript.stamina / playerScript.maxStamina) * staminaSize.x * Screen.width, staminaSize.y * Screen.height));
@@ -98,19 +126,19 @@ public class MasterGUI : MonoBehaviour {
 	}
 	
 	// Displays ammo in clip and total ammo carried
-	void gunDisplay(){
+	void gunDisplay (){
 		GUI.BeginGroup (new Rect(gunLoc.x * Screen.width, gunLoc.y * Screen.height, gunSize.x * Screen.width, gunSize.y * Screen.height));
 			GUI.Label (new Rect(0, 0, ammoEmpty.width, ammoEmpty.height), staminaEmpty);
 			GUI.BeginGroup (new Rect(0, 0, ((float)playerScript.currentClip / (float)playerScript.maxClipSize) * gunSize.x * Screen.width, gunSize.y * Screen.height));
 				GUI.Label (new Rect(0, 0, ammoFull.width, ammoFull.height), ammoFull);
 			GUI.EndGroup ();
 			GUI.Label (new Rect(ammoNumLoc.x * gunSize.x * Screen.width, ammoNumLoc.y * gunSize.y * Screen.height, gunSize.x * Screen.width, gunSize.y * Screen.height),
-						playerScript.currentClip + " / " + playerScript.currentAmmo, ammoStyle);
+						playerScript.currentClip + " / " + playerScript.maxAmmo, ammoStyle);
 		GUI.EndGroup ();
 	}
 	
 	// Displays the reloading meter
-	void reloadMeter(){
+	void reloadMeter (){
 		GUI.Label (new Rect(reloadMeterLoc.x + reloadLabelLoc.x, reloadMeterLoc.y + reloadLabelLoc.y, reloadLabelSize.x, reloadLabelSize.y), "Reloading!", reloadStyle);
 		GUI.BeginGroup (new Rect(reloadMeterLoc.x, reloadMeterLoc.y, reloadMeterSize.x, reloadMeterSize.y));
 			GUI.Label (new Rect(0, 0, reloadEmpty.width, reloadEmpty.height), reloadEmpty);
@@ -120,8 +148,37 @@ public class MasterGUI : MonoBehaviour {
 		GUI.EndGroup ();
 	}
 	
-	public void reload(){
+	public void reload (){
 		reloadElapsed = playerScript.reloadTime;
 		reloading = true;
+	}
+	
+	void pauseMenu (){
+		GUI.BeginGroup (new Rect(pauseMenuLoc.x * Screen.width, pauseMenuLoc.y * Screen.height, pauseMenuSize.x * Screen.width, pauseMenuSize.y * Screen.height));
+			float itemSize = (pauseMenuSize.y * Screen.height) / pauseMenuItems.Length;
+			for (int i = 0; i < pauseMenuItems.Length; i++){
+				if (GUI.Button (new Rect(0, itemSize * i, pauseMenuSize.x * Screen.width, itemSize), pauseMenuItems[i]/*, pauseMenuStyle*/))
+					menuBools[i] = true;
+			}
+		GUI.EndGroup ();
+	}
+	
+	void resume (){
+		masterScript.pause ();
+	}
+	
+	void showOptions (){
+		mainMenu = false;
+		
+	}
+	
+	void restart (){
+		mainMenu = false;
+		//masterScript.restartLevel ();
+	}
+	
+	void quit (){
+		mainMenu = false;
+		//masterScript.quitGame ();
 	}
 }
